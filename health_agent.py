@@ -1,140 +1,151 @@
 #!/usr/bin/env python
 """
 health_agent.py
-Integrates Terra API to fetch real-time wearable health data for squad members.
-Uses Elasticsearch for RAG-based analysis to identify trends in heart health and readiness.
+Fetches real-time wearable health data using Terra API and performs advanced analysis using InterSystems IRIS.
+Deepens IRIS usage by performing SQL operations for data indexing and simulating a vector similarity search.
 """
 
+import os
 import requests
-from elasticsearch import Elasticsearch
+import intersystems_iris.dbapi._DBAPI as dbapi
 
-# Terra API configuration
-TERRA_API_KEY = "YOUR_TERRA_API_KEY"  # Replace with your actual Terra API key
+# Terra API configuration.
+TERRA_API_KEY = os.environ.get("TERRA_API_KEY", "aATpG3KvICnnC1dIXcHrB3WGNrLCbmkn")
 TERRA_API_URL = "https://api.tryterra.co/v2/health"
 
-# Elasticsearch configuration
-ES_HOST = "http://localhost:9200"
-ES_INDEX = "health-data"
-
+# IRIS configuration.
+IRIS_CONFIG = {
+    "hostname": os.environ.get("IRIS_HOST", "localhost"),
+    "port": int(os.environ.get("IRIS_PORT", "1972")),
+    "namespace": os.environ.get("IRIS_NAMESPACE", "USER"),
+    "username": os.environ.get("IRIS_USERNAME", "_SYSTEM"),
+    "password": os.environ.get("IRIS_PASSWORD", "demo12345")
+}
 
 def fetch_terra_data(user_id):
-    """
-    Fetch real-time wearable health data for a squad member using Terra API.
-    Args:
-        user_id (str): The unique ID of the user whose data is being fetched.
-    Returns:
-        dict: A dictionary containing wearable health data (e.g., heart rate, steps, sleep).
-    """
     headers = {"Authorization": f"Bearer {TERRA_API_KEY}"}
     params = {"user_id": user_id}
-
     try:
         response = requests.get(TERRA_API_URL, headers=headers, params=params)
-        response.raise_for_status()  # Raise an error for bad HTTP responses
+        response.raise_for_status()
         return response.json()
     except requests.exceptions.RequestException as e:
         print(f"Error fetching Terra data: {e}")
         return {}
 
-
-def index_health_data_to_elasticsearch(data):
-    """
-    Index the fetched health data into Elasticsearch for further analysis.
-    Args:
-        data (dict): The health data to be indexed.
-    Returns:
-        None
-    """
-    es = Elasticsearch([ES_HOST])
-
+def iris_connect():
     try:
-        # Index the document into Elasticsearch
-        es.index(index=ES_INDEX, body=data)
-        print("Health data successfully indexed into Elasticsearch.")
+        conn = dbapi.connect(
+            hostname=IRIS_CONFIG["hostname"],
+            port=IRIS_CONFIG["port"],
+            namespace=IRIS_CONFIG["namespace"],
+            username=IRIS_CONFIG["username"],
+            password=IRIS_CONFIG["password"]
+        )
+        return conn
     except Exception as e:
-        print(f"Error indexing data to Elasticsearch: {e}")
+        print(f"IRIS connection error: {e}")
+        return None
 
+def index_health_data_to_iris(data):
+    conn = iris_connect()
+    if conn is None:
+        print("Failed to connect to IRIS.")
+        return
+    try:
+        with conn.cursor() as cursor:
+            query = "INSERT INTO HealthData (user_id, heart_rate, steps, sleep_hours) VALUES (?, ?, ?, ?)"
+            cursor.execute(query, (
+                data.get("user_id", "unknown"),
+                data.get("heart_rate", 0),
+                data.get("steps", 0),
+                data.get("sleep_hours", 0)
+            ))
+            conn.commit()
+            print("Health data successfully indexed into IRIS.")
+    except Exception as e:
+        print(f"Error indexing health data: {e}")
+    finally:
+        conn.close()
+
+def iris_vector_search(query_vector):
+    """
+    Performs a vector similarity search in IRIS using an SQL query.
+    This function simulates vector similarity by querying the HealthData table
+    and ordering by a hypothetical VECTOR_SIMILARITY() function.
+    """
+    conn = iris_connect()
+    if conn is None:
+        print("Failed to connect to IRIS for vector search.")
+        return []
+    cursor = conn.cursor()
+    try:
+        query_vector_str = ",".join(map(str, query_vector))
+        # Hypothetical SQL query leveraging IRIS's vector similarity.
+        sql = """
+            SELECT TOP 3 user_id, heart_rate, steps, sleep_hours,
+                   VECTOR_SIMILARITY(vec_data, ?) AS similarity
+            FROM HealthData
+            ORDER BY similarity DESC
+            """
+        cursor.execute(sql, (query_vector_str,))
+        rows = cursor.fetchall()
+        results = []
+        for row in rows:
+            results.append({
+                "user_id": row[0],
+                "heart_rate": row[1],
+                "steps": row[2],
+                "sleep_hours": row[3],
+                "similarity": row[4]
+            })
+        return results
+    except Exception as e:
+        print(f"Error in IRIS vector search: {e}")
+        return []
+    finally:
+        cursor.close()
+        conn.close()
 
 def analyze_health_data(data):
     """
-    Analyze the wearable health data using RAG techniques with Elasticsearch.
-    Args:
-        data (dict): The wearable health data to be analyzed.
-    Returns:
-        str: A summary of the analysis.
+    Analyzes current health data by performing a vector search in IRIS
+    to retrieve similar historical records, and synthesizes insights.
     """
-    es = Elasticsearch([ES_HOST])
-
-    try:
-        # Query Elasticsearch for similar historical records
-        query = {
-            "query": {
-                "bool": {
-                    "must": [
-                        {"match": {"heart_rate": data.get("heart_rate", 0)}},
-                        {"range": {"steps": {"gte": 5000}}}  # Example threshold for steps
-                    ]
-                }
-            }
-        }
-
-        response = es.search(index=ES_INDEX, body=query)
-
-        # Extract insights from the retrieved documents
-        insights = []
-        for hit in response["hits"]["hits"]:
-            source = hit["_source"]
-            insights.append(f"User {source['user_id']} had a similar heart rate of {source['heart_rate']} bpm.")
-
-        # Generate a summary based on the analysis
-        summary = (
-                f"Health Analysis:\n"
-                f"- Heart Rate: {data.get('heart_rate', 'N/A')} bpm\n"
-                f"- Steps: {data.get('steps', 'N/A')}\n"
-                f"- Sleep Hours: {data.get('sleep_hours', 'N/A')}\n"
-                f"\nInsights:\n" + "\n".join(insights)
+    current_vector = [data.get("heart_rate", 0), data.get("steps", 0), data.get("sleep_hours", 0)]
+    similar_records = iris_vector_search(current_vector)
+    insights = []
+    for record in similar_records:
+        insights.append(
+            f"User {record['user_id']} had similar metrics (Heart Rate: {record['heart_rate']} bpm, Steps: {record['steps']}, Sleep: {record['sleep_hours']} hrs, Similarity: {record['similarity']:.2f})."
         )
-
-        return summary
-
-    except Exception as e:
-        print(f"Error analyzing health data: {e}")
-        return "Error analyzing health data."
-
+    summary = (
+        f"Health Analysis Report:\n"
+        f"- Current Data: Heart Rate: {data.get('heart_rate', 'N/A')} bpm, Steps: {data.get('steps', 'N/A')}, Sleep: {data.get('sleep_hours', 'N/A')} hrs\n"
+        f"Similar Historical Records:\n" + "\n".join(insights)
+    )
+    return summary
 
 def health_analysis(task_description, user_id):
     """
-    Main function to perform health analysis by fetching and analyzing wearable data.
-    Args:
-        task_description (str): A description of the task being performed.
-        user_id (str): The unique ID of the user whose health is being analyzed.
-    Returns:
-        str: A detailed report of the health analysis.
+    Orchestrates the health analysis workflow:
+    1. Fetch wearable data via Terra API.
+    2. Index the data in IRIS.
+    3. Analyze the data by performing a vector search.
+    4. Return a detailed analysis report.
     """
-    print(f"Starting health analysis for task: '{task_description}' and user ID: {user_id}")
-
-    # Step 1: Fetch wearable health data from Terra API
+    print(f"Starting health analysis for task '{task_description}' for user '{user_id}'.")
     wearable_data = fetch_terra_data(user_id)
-
     if not wearable_data:
-        return "Failed to fetch wearable data. Please check the Terra API configuration."
-
-    # Step 2: Index the fetched data into Elasticsearch for RAG-based analysis
-    index_health_data_to_elasticsearch(wearable_data)
-
-    # Step 3: Analyze the indexed data and generate insights
+        return "Failed to fetch wearable data. Check Terra API configuration."
+    wearable_data["user_id"] = user_id
+    index_health_data_to_iris(wearable_data)
     analysis_report = analyze_health_data(wearable_data)
-
     return analysis_report
 
-
 if __name__ == "__main__":
-    # Example usage of health_analysis function
-    user_id = "demo_user_001"
-
+    user_id = "4actk-risa-testing-oTVlpMugka"
     task_description = "Assess squad readiness using wearable health data."
-
     report = health_analysis(task_description, user_id)
-
     print("\nHealth Analysis Report:")
     print(report)

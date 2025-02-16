@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 """
+<<<<<<< Updated upstream
 meeting_agent_oauth.py
 Simulates the Meeting Agent using Zoom API with OAuth.
 For demo purposes, returns a dummy meeting confirmation.
@@ -50,5 +51,29 @@ def create_zoom_meeting(topic):
 
 if __name__ == "__main__":
     # Example usage
+=======
+meeting_agent.py
+Simulates the Meeting Agent using Zoom API.
+Returns a dummy meeting confirmation.
+"""
+
+import jwt
+import time
+
+def create_zoom_meeting(topic):
+    api_key = "YOUR_ZOOM_API_KEY"
+    api_secret = "YOUR_ZOOM_API_SECRET"
+    payload = {"iss": api_key, "exp": time.time() + 3600}
+    token = jwt.encode(payload, api_secret, algorithm="HS256")
+    dummy_response = {
+        "id": "123456789",
+        "topic": topic,
+        "start_time": "2025-02-16T10:00:00Z",
+        "join_url": "https://zoom.us/j/123456789"
+    }
+    return dummy_response
+
+if __name__ == "__main__":
+>>>>>>> Stashed changes
     meeting = create_zoom_meeting("Squad Readiness Review")
     print("Zoom Meeting:", meeting)

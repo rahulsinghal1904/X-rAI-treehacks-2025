@@ -2,8 +2,8 @@
 """
 main_workflow.py
 Integrates all agent modules into a unified workflow.
-It parses the workflow, routes tasks to the appropriate agents, runs each agent,
-and applies validation using the Judge Agent.
+Parses user workflow, routes tasks, executes each specialized agent,
+and validates outputs. Also enriches the final report with the DAIN Agent.
 """
 
 from workflow_parser import parse_workflow
@@ -13,68 +13,61 @@ from health_agent import health_analysis
 from meeting_agent import create_zoom_meeting
 from report_agent import generate_report
 from judge_agent import validate_output
+from dain_agent import enhance_analysis
 
 
 def main_workflow(user_input, user_id):
-    # For demonstration, use a hardcoded parsed tasks list (in practice, parse_workflow would return JSON)
+    # For demo, using hardcoded tasks. In production, parse_workflow would generate a JSON list.
     tasks = [
         {"task": "Analyze market trends in AI healthcare", "type": "market"},
         {"task": "Assess squad health using wearable data", "type": "health"},
         {"task": "Schedule a review meeting", "type": "meeting"},
         {"task": "Generate a mission report", "type": "report"}
     ]
-
     results = {}
 
     for t in tasks:
         task_type = t["type"]
         description = t["task"]
+        service_info = route_task(task_type, description)
 
+<<<<<<< Updated upstream
         # Route the task
 
         service_info = route_task(task_type, description)
         print(f"Routing '{description}' to provider: {service_info['provider']}")
+=======
+        # Debugging: print type and content of service_info.
+        print("DEBUG: service_info type:", type(service_info))
+        print("DEBUG: service_info content:", service_info)
+>>>>>>> Stashed changes
 
-        # Execute based on type
         if task_type == "market":
-            result = market_analysis(description)
-            results["market"] = result
-
+            results["market"] = market_analysis(description)
         elif task_type == "health":
-            result = health_analysis(description, user_id)
-            results["health"] = result
-
-            # Simulate Judge Agent validating a dummy health metric (e.g., heart_rate from Terra data)
-            # Here we use the dummy datum from health_agent.py (heart_rate=72)
-            dummy_health_data = {"heart_rate": 72}
-            valid, message = validate_output("health", dummy_health_data)
-            if not valid:
-                results["health_validation"] = message
-            else:
-                results["health_validation"] = "Health output validated."
-
-        # elif task_type == "meeting":
-        #     result = create_zoom_meeting(description)
-        #     results["meeting"] = result
-
+            results["health"] = health_analysis(description, user_id)
+            # Validate with dummy health data (heart_rate assumed to be 72).
+            dummy_health = {"heart_rate": 72}
+            valid, message = validate_output("health", dummy_health)
+            results["health_validation"] = message
+        elif task_type == "meeting":
+            results["meeting"] = create_zoom_meeting(description)
         elif task_type == "report":
-            result = generate_report(description)
-            results["report"] = result
+            results["report"] = generate_report(description)
+            valid, message = validate_output("report", results["report"])
+            results["report_validation"] = message
 
-            # Validate report output using Judge Agent
-            valid, message = validate_output("report", result)
-            if not valid:
-                results["report_validation"] = message
-            else:
-                results["report_validation"] = "Report output validated."
+    # Use the DAIN Agent to enhance the final report.
+    initial_report = results.get("report", "No report generated.")
+    results["enhanced_report"] = enhance_analysis(initial_report, user_id)
 
     return results
 
 
 if __name__ == "__main__":
-    # Example usage of the entire workflow
-    user_prompt = ("Assess squad readiness using wearable data, schedule a review meeting, "
-                   "and generate a mission report.")
-    user_id = "demo_user"
+    user_prompt = (
+        "Assess squad readiness using wearable data, schedule a review meeting, and generate a mission report."
+    )
+    user_id = "demo_user_001"
     workflow_results = main_workflow(user_prompt, user_id)
     print("Workflow Results:", workflow_results)

@@ -4,3 +4,4 @@ requests
 elasticsearch
 streamlit
 pyjwt
+intersystems_irispython

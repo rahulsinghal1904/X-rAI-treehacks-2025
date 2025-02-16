@@ -1,4 +1,4 @@
-SDLC Accelerator: AI-Powered Project Inception
+SLC Accelerator: AI-Powered Project Inception
 ----------------------------------------------
 Demo Video: 
 Vision

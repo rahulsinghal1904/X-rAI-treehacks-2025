@@ -1,4 +1,4 @@
-SLC Accelerator: AI-Powered Project Inception
+SLC XLR8: AI-Powered Project Inception
 ----------------------------------------------
 Demo Video: 
 Vision
@@ -173,7 +173,7 @@ Hackathon Implementation
 *   Integration examples
 *   Impact visualization
 
-This prototype demonstrates how AI can augment human expertise in software project planning, offering a glimpse into more efficient, consistent, and high-quality project inception processes. Built with innovation and expertise by the SDLC Accelerator Team 
+This prototype demonstrates how AI can augment human expertise in software project planning, offering a glimpse into more efficient, consistent, and high-quality project inception processes. Built with innovation and expertise by the SLC XLR8 Team 
 
 _Note: This is a hackathon prototype demonstrating the potential for AI-assisted project inception._
 

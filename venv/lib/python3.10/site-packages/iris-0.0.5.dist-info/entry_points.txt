@@ -1,0 +1,3 @@
+[console_scripts]
+bind = iris._cli:bind
+unbind = iris._cli:unbind

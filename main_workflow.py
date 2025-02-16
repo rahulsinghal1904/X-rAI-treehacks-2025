@@ -45,6 +45,7 @@ def main_workflow(user_input, user_id):
         if task_type == "market":
             results["market"] = market_analysis(description)
         elif task_type == "health":
+<<<<<<< Updated upstream
             results["health"] = health_analysis(description, user_id)
             # Validate with dummy health data (heart_rate assumed to be 72).
             dummy_health = {"heart_rate": 72}
@@ -52,6 +53,21 @@ def main_workflow(user_input, user_id):
             results["health_validation"] = message
         elif task_type == "meeting":
             results["meeting"] = create_zoom_meeting(description)
+=======
+            result = health_analysis(description, user_id)
+            results["health"] = result
+
+            # Simulate Judge Agent validating a dummy health metric (e.g., heart_rate from Terra data)
+            # Here we use the dummy datum from health_agent.py (heart_rate=72)
+            dummy_health_data = {"heart_rate": 72}
+            valid, message = validate_output("health", dummy_health_data)
+            if not valid:
+                results["health_validation"] = message
+            else:
+                results["health_validation"] = "Health output validated."
+
+
+>>>>>>> Stashed changes
         elif task_type == "report":
             results["report"] = generate_report(description)
             valid, message = validate_output("report", results["report"])

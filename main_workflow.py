@@ -10,7 +10,7 @@ from workflow_parser import parse_workflow
 from adaptive_router import route_task
 from market_agent import market_analysis
 from health_agent import health_analysis
-# from meeting_agent import create_zoom_meeting
+from meeting_agent import create_zoom_meeting
 from report_agent import generate_report
 from judge_agent import validate_output
 
@@ -31,7 +31,8 @@ def main_workflow(user_input, user_id):
         description = t["task"]
 
         # Route the task
-        service_info = route_task(task_type)
+
+        service_info = route_task(task_type, description)
         print(f"Routing '{description}' to provider: {service_info['provider']}")
 
         # Execute based on type

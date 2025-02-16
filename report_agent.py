@@ -1,20 +1,35 @@
 #!/usr/bin/env python
 """
 report_agent.py
-Simulates the Report Agent using Mistral API to generate a final report.
-For demo purposes, returns a dummy generated report.
+Uses Mistral API to generate a final report based on a given task description.
 """
 
 import requests
+import os
+
+# Set your Mistral API key and endpoint
+MISTRAL_API_KEY = "LDIPhUAb8kUwgmwzX88ADpT2tBXj8UY0"
+MISTRAL_API_ENDPOINT = "https://api.mistral.ai/v1/generate_report"  # Update with actual endpoint
 
 def generate_report(task_description):
-    # Simulate an API call to Mistral by returning a dummy report.
-    report = (
-        f"Mission Report: Comprehensive report on '{task_description}'. "
-        "All metrics and analyses have been compiled successfully. "
-        "Key findings indicate readiness and potential areas for improvement."
-    )
-    return report
+    """
+    Calls Mistral API to generate a report based on the task description.
+    """
+    headers = {
+        "Authorization": f"Bearer {MISTRAL_API_KEY}",
+        "Content-Type": "application/json"
+    }
+
+    payload = {
+        "task": task_description
+    }
+
+    try:
+        response = requests.post(MISTRAL_API_ENDPOINT, json=payload, headers=headers)
+        response.raise_for_status()  # Raise an error for bad responses (4xx, 5xx)
+        return response.json().get("report", "No report generated.")
+    except requests.exceptions.RequestException as e:
+        return f"Error generating report: {e}"
 
 if __name__ == "__main__":
     # Example usage of generate_report

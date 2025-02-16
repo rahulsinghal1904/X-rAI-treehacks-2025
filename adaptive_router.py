@@ -71,7 +71,9 @@ def route_task(task_type, task_description):
 
     print(f"Task '{task_type}' routed to: {selected_model} (estimated tokens: {estimated_tokens})")
 
-    return selected_model
+
+    return {"provider": selected_model}
+
 
 
 def update_feedback(model_name):

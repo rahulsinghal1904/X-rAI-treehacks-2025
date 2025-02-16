@@ -53,9 +53,6 @@ def main_workflow(user_input, user_id):
             else:
                 results["health_validation"] = "Health output validated."
 
-        # elif task_type == "meeting":
-        #     result = create_zoom_meeting(description)
-        #     results["meeting"] = result
 
         elif task_type == "report":
             result = generate_report(description)

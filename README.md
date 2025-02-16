@@ -46,6 +46,7 @@ Clone the repository:
 ```bash
 git clone https://github.com/your-repo/x-rAI.git
 cd x-rAI
+```
 
 ## What We Learned
 - Efficient resource allocation is key to optimizing AI inference.

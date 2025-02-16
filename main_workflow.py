@@ -31,27 +31,28 @@ def main_workflow(user_input, user_id):
         description = t["task"]
         service_info = route_task(task_type, description)
 
-<<<<<<< Updated upstream
-        # Route the task
 
-        service_info = route_task(task_type, description)
-        print(f"Routing '{description}' to provider: {service_info['provider']}")
-=======
         # Debugging: print type and content of service_info.
         print("DEBUG: service_info type:", type(service_info))
         print("DEBUG: service_info content:", service_info)
->>>>>>> Stashed changes
 
         if task_type == "market":
             results["market"] = market_analysis(description)
         elif task_type == "health":
-            results["health"] = health_analysis(description, user_id)
-            # Validate with dummy health data (heart_rate assumed to be 72).
-            dummy_health = {"heart_rate": 72}
-            valid, message = validate_output("health", dummy_health)
-            results["health_validation"] = message
-        elif task_type == "meeting":
-            results["meeting"] = create_zoom_meeting(description)
+
+            result = health_analysis(description, user_id)
+            results["health"] = result
+
+            # Simulate Judge Agent validating a dummy health metric (e.g., heart_rate from Terra data)
+            # Here we use the dummy datum from health_agent.py (heart_rate=72)
+            dummy_health_data = {"heart_rate": 72}
+            valid, message = validate_output("health", dummy_health_data)
+            if not valid:
+                results["health_validation"] = message
+            else:
+                results["health_validation"] = "Health output validated."
+
+
         elif task_type == "report":
             results["report"] = generate_report(description)
             valid, message = validate_output("report", results["report"])

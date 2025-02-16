@@ -1,2 +1,2 @@
-# xAI-MoE
+# X-rAI
 For TreeHacks 2025

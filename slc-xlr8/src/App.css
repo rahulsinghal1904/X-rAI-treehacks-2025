@@ -1,0 +1,227 @@
+/* Disable overall page scrolling */
+body {
+  overflow: hidden;
+  margin: 0;
+  font-family: Arial, sans-serif;
+}
+
+.app {
+  display: flex;
+  height: 100vh;
+}
+
+.sidebar {
+  width: 250px;
+  padding: 30px;
+  background: #1f2937;
+  color: #ffffff;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  overflow-y: auto;
+}
+
+.sidebar h2 {
+  color: #93c5fd;
+  font-weight: bold;
+  margin-bottom: 20px;
+}
+
+.sidebar p {
+  cursor: pointer;
+  padding: 10px 0;
+  font-size: 16px;
+  color: #d1d5db;
+}
+
+.sidebar p.active {
+  color: #93c5fd;
+  font-weight: bold;
+}
+
+.content {
+  flex: 1;
+  padding: 30px;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  overflow-y: hidden;
+  position: relative;
+}
+
+.screen {
+  width: calc(100% - 100px); /* Adjusted width to make use of available space while maintaining margins */
+  max-width: 900px;           /* Limit width to 800px for better readability */
+  background: #ffffff;
+  box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  border-radius: 8px;
+  max-height: calc(100vh - 120px); /* Leave space for the top progress bar */
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  overflow-y: auto;
+  margin-top: 20px;
+  position: relative;
+}
+
+h2 {
+  color: #1f2937;
+  font-size: 24px;
+  margin-bottom: 20px;
+}
+
+button {
+  margin: 10px;
+  padding: 10px 20px;
+  font-size: 16px;
+  border-radius: 5px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+button.btn-primary {
+  background-color: #3b82f6;
+  color: white;
+}
+
+button.btn-primary:hover {
+  background-color: #2563eb;
+}
+
+button.btn-secondary {
+  background-color: #64748b;
+  color: white;
+}
+
+button.btn-secondary:hover {
+  background-color: #475569;
+}
+
+button.btn-success {
+  background-color: #10b981;
+  color: white;
+}
+
+button.btn-success:hover {
+  background-color: #059669;
+}
+
+table.table-bordered {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+  max-height: 300px;
+  overflow-y: auto;
+  display: block;
+}
+
+table.table-bordered th,
+table.table-bordered td {
+  border: 1px solid #e5e7eb;
+  padding: 10px;
+  text-align: left;
+}
+
+table.table-bordered tr:nth-child(even) {
+  background-color: #f9fafb;
+}
+
+textarea {
+  width: 100%;
+  height: 200px;
+  overflow-y: auto;
+  resize: none;
+  padding: 10px;
+  border: 1px solid #e5e7eb;
+  border-radius: 5px;
+}
+
+.fixed-buttons {
+  position: fixed;
+  bottom: 30px;
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  max-width: 800px;
+  padding: 0 20px;
+  box-sizing: border-box;
+}
+
+button.fixed-upload,
+button.fixed-download {
+  font-size: 1rem;
+  padding: 10px 15px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+
+button.fixed-upload {
+  background-color: #3b82f6;
+  color: white;
+  border: none;
+}
+
+button.fixed-upload:hover {
+  background-color: #2563eb;
+}
+
+button.fixed-download {
+  background-color: #10b981;
+  color: white;
+  border: none;
+}
+
+button.fixed-download:hover {
+  background-color: #059669;
+}
+
+.progress-bar-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 8px;
+  background-color: #e5e7eb; /* Light background for the bar track */
+  z-index: 1000;
+}
+
+/* Progress bar indicating progress */
+.progress-bar {
+  height: 100%;
+  background-color: #3b82f6; /* Progress bar color */
+  transition: width 0.3s ease;
+}
+
+/* Arrow button styling using Bootstrap Icons */
+.arrow {
+  position: fixed;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 2.5rem;
+  color: #3b82f6;
+  background: none;
+  border: none;
+  cursor: pointer;
+  z-index: 1000;
+  transition: color 0.3s ease;
+}
+
+.arrow:hover {
+  color: #2563eb;
+}
+
+/* Positioning arrows without overlap */
+.arrow-left {
+  left: 310px; /* Positioned next to the sidebar */
+}
+
+.arrow-right {
+  right: 0px;
+}
+
+

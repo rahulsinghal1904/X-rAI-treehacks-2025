@@ -35,6 +35,18 @@ x-rAI is an AI inference system that leverages a Mixture of Experts (MoE) approa
 - Designed an intelligent caching system that minimizes redundant computations.
 - Reduced Agile story creation time from months to minutes, significantly accelerating development cycles.
 
+## Getting Started
+### Prerequisites
+- Python 3.8+
+- TensorFlow / PyTorch
+- Redis (for caching)
+- Docker (for deployment)
+
+Clone the repository:
+```bash
+git clone https://github.com/your-repo/x-rAI.git
+cd x-rAI
+
 ## What We Learned
 - Efficient resource allocation is key to optimizing AI inference.
 - Properly designed caching mechanisms can dramatically improve performance.
@@ -45,16 +57,3 @@ x-rAI is an AI inference system that leverages a Mixture of Experts (MoE) approa
 - **Enhanced Explainability**: Adding features to help users understand why specific expert models were chosen.
 - **Real-world Deployment**: Testing x-rAI in industries like finance and healthcare where accuracy, speed, and transparency are crucial.
 - **Agile Process Refinement**: Integrating AI-powered retrospective analysis, predictive backlog grooming, and automated sprint planning for a seamless workflow.
-
-## Getting Started
-### Prerequisites
-- Python 3.8+
-- TensorFlow / PyTorch
-- Redis (for caching)
-- Docker (for deployment)
-
-### Installation
-Clone the repository:
-```bash
-git clone https://github.com/your-repo/x-rAI.git
-cd x-rAI

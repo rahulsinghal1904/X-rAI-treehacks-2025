@@ -1,7 +1,7 @@
 # X-rAI (Xplainable Reinforcement Artificial Intelligence for SuperHuman Builder)
 
 ## Introduction
-AI is evolving at an incredible pace, but one major challenge remains—how do we ensure AI models are not just powerful but also explainable and efficient? As AI is increasingly used in high-stakes environments, from finance to healthcare, understanding why and how it makes decisions is crucial. x-rAI optimizes AI performance while maintaining transparency and adaptability.
+AI is evolving at an incredible pace, but one major challenge remains—how do we ensure AI models are not just powerful but also explainable and efficient? As AI is increasingly used in high-stakes environments, from finance to healthcare, understanding why and how it makes decisions is crucial. x-rAI is a multi-agentic system that optimizes AI performance while maintaining transparency and adaptability.
 
 ## What is x-rAI?
 x-rAI is an AI inference system that leverages a Mixture of Experts (MoE) approach combined with adaptive learning to optimize processing at the token level. It dynamically allocates computational resources, ensuring efficient inference without compromising accuracy. Our system employs an auxiliary load balancer and caching mechanisms at the expert cluster level, resulting in faster, more reliable, and scalable AI decision-making.
